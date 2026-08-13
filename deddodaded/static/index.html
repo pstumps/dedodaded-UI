@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#191a18">
+    <title>Deddodaded</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script defer src="/app.js"></script>
+</head>
+<body>
+    <div class="noise" aria-hidden="true"></div>
+    <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+    <section id="login-view" class="login-view">
+        <div class="login-art" aria-hidden="true">
+            <img class="login-art-primary" src="/assets/valheim.png" alt="">
+            <img class="login-art-secondary" src="/assets/project-zomboid.png" alt="">
+            <div class="art-index">VPS / 01</div>
+        </div>
+        <div class="login-panel">
+            <div class="brand brand-large">
+                <span class="brand-mark" aria-hidden="true">D</span>
+                <span>Deddodaded</span>
+            </div>
+            <div class="login-copy">
+                <p class="eyebrow">Server control</p>
+                <h1>Bring the world online.</h1>
+                <p>Project Zomboid and Valheim, from one host.</p>
+            </div>
+            <form id="login-form" class="form-stack">
+                <label class="field">
+                    <span>Username</span>
+                    <input name="username" autocomplete="username" required maxlength="80" autofocus>
+                </label>
+                <div class="field">
+                    <label for="login-password">Password</label>
+                    <span class="password-field">
+                        <input id="login-password" name="password" type="password" autocomplete="current-password" required maxlength="256">
+                        <button class="icon-button input-action" type="button" data-toggle-password="login-password" title="Show password" aria-label="Show password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </span>
+                </div>
+                <p id="login-error" class="form-error" role="alert"></p>
+                <button class="button button-primary button-wide" type="submit">
+                    <span>Open panel</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+            <p class="login-foot"><span class="pulse-dot"></span> Encrypted local control plane</p>
+        </div>
+    </section>
+
+    <div id="app-shell" class="app-shell" hidden>
+        <aside class="sidebar">
+            <div class="brand brand-sidebar">
+                <span class="brand-mark" aria-hidden="true">D</span>
+                <span class="brand-word">Deddodaded</span>
+            </div>
+            <nav class="primary-nav" aria-label="Primary navigation">
+                <button class="nav-button is-active" type="button" data-page="servers" aria-current="page">
+                    <i data-lucide="server"></i>
+                    <span>Servers</span>
+                </button>
+                <button class="nav-button" type="button" data-page="activity">
+                    <i data-lucide="activity"></i>
+                    <span>Activity</span>
+                </button>
+            </nav>
+            <div class="sidebar-foot">
+                <div id="docker-health" class="host-health">
+                    <span class="status-dot status-unknown"></span>
+                    <span>Checking host</span>
+                </div>
+                <button id="logout-button" class="nav-button" type="button">
+                    <i data-lucide="log-out"></i>
+                    <span>Sign out</span>
+                </button>
+            </div>
+        </aside>
+
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Control plane</p>
+                <h1 id="page-title">Servers</h1>
+            </div>
+            <div class="topbar-actions">
+                <span id="user-chip" class="user-chip"></span>
+                <button class="button button-primary" type="button" data-open-create>
+                    <i data-lucide="plus"></i>
+                    <span>New server</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section id="servers-page" class="page servers-page">
+                <div class="server-rail">
+                    <div class="section-heading compact-heading">
+                        <div>
+                            <p class="eyebrow">Fleet</p>
+                            <h2>Instances <span id="server-count" class="count-badge">0</span></h2>
+                        </div>
+                        <button class="icon-button" type="button" data-open-create title="Add server" aria-label="Add server">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </div>
+                    <div id="server-list" class="server-list"></div>
+                </div>
+                <div id="server-detail" class="server-detail"></div>
+            </section>
+
+            <section id="activity-page" class="page activity-page" hidden>
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Audit trail</p>
+                        <h2>Recent activity</h2>
+                    </div>
+                    <button id="refresh-events" class="icon-button" type="button" title="Refresh activity" aria-label="Refresh activity">
+                        <i data-lucide="refresh-cw"></i>
+                    </button>
+                </div>
+                <div id="event-list" class="event-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <dialog id="create-dialog" class="dialog dialog-wide">
+        <form id="create-form" method="dialog">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow">Provision instance</p>
+                    <h2>New game server</h2>
+                </div>
+                <button class="icon-button" type="button" data-close-dialog title="Close" aria-label="Close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="dialog-body">
+                <fieldset class="game-picker">
+                    <legend>Game</legend>
+                    <label class="game-choice is-selected">
+                        <input type="radio" name="game" value="project-zomboid" checked>
+                        <img src="/assets/project-zomboid.png" alt="">
+                        <span><strong>Project Zomboid</strong><small>Steam Workshop</small></span>
+                        <i data-lucide="check"></i>
+                    </label>
+                    <label class="game-choice">
+                        <input type="radio" name="game" value="valheim">
+                        <img src="/assets/valheim.png" alt="">
+                        <span><strong>Valheim</strong><small>Thunderstore + BepInEx</small></span>
+                        <i data-lucide="check"></i>
+                    </label>
+                </fieldset>
+                <div class="form-grid">
+                    <label class="field field-span-2">
+                        <span>Server name</span>
+                        <input name="name" required minlength="3" maxlength="64" placeholder="Knox County Night Shift">
+                    </label>
+                    <label class="field">
+                        <span>World name</span>
+                        <input name="world_name" required maxlength="64" value="Knox">
+                    </label>
+                    <label class="field">
+                        <span>Base port</span>
+                        <input name="port" type="number" required min="1024" max="65533" value="16261">
+                    </label>
+                    <label class="field">
+                        <span>Player slots</span>
+                        <input name="max_players" type="number" required min="1" max="100" value="16">
+                    </label>
+                    <div class="field">
+                        <label for="server-password">Server password</label>
+                        <span class="password-field">
+                            <input id="server-password" name="password" type="password" maxlength="64" autocomplete="new-password">
+                            <button class="icon-button input-action" type="button" data-toggle-password="server-password" title="Show password" aria-label="Show password"><i data-lucide="eye"></i></button>
+                        </span>
+                    </div>
+                    <div id="admin-password-field" class="field field-span-2">
+                        <label for="admin-password">Admin password</label>
+                        <span class="password-field">
+                            <input id="admin-password" name="admin_password" type="password" minlength="8" maxlength="64" pattern="[A-Za-z0-9]+" autocomplete="new-password" required>
+                            <button class="icon-button input-action" type="button" data-toggle-password="admin-password" title="Show password" aria-label="Show password"><i data-lucide="eye"></i></button>
+                        </span>
+                    </div>
+                    <label class="switch-row field-span-2">
+                        <span><strong>Public listing</strong><small>Advertise this server in the game browser</small></span>
+                        <input name="public" type="checkbox" checked>
+                        <span class="switch" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <p id="create-error" class="form-error" role="alert"></p>
+            </div>
+            <div class="dialog-footer">
+                <span id="port-summary" class="port-summary">UDP 16261–16262</span>
+                <div class="dialog-actions">
+                    <button class="button button-secondary" type="button" data-close-dialog>Cancel</button>
+                    <button class="button button-primary" type="submit">
+                        <i data-lucide="rocket"></i>
+                        <span>Provision server</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="mod-dialog" class="dialog dialog-wide">
+        <div class="dialog-header">
+            <div>
+                <p id="mod-source-label" class="eyebrow">Mod source</p>
+                <h2 id="mod-dialog-title">Add mod</h2>
+            </div>
+            <button class="icon-button" type="button" data-close-dialog title="Close" aria-label="Close"><i data-lucide="x"></i></button>
+        </div>
+        <div id="mod-dialog-body" class="dialog-body mod-dialog-body"></div>
+    </dialog>
+
+    <dialog id="logs-dialog" class="dialog dialog-terminal">
+        <div class="dialog-header terminal-header">
+            <div>
+                <p class="eyebrow">Container output</p>
+                <h2 id="logs-title">Server logs</h2>
+            </div>
+            <div class="dialog-header-actions">
+                <button id="refresh-logs" class="icon-button icon-button-inverse" type="button" title="Refresh logs" aria-label="Refresh logs"><i data-lucide="refresh-cw"></i></button>
+                <button class="icon-button icon-button-inverse" type="button" data-close-dialog title="Close" aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <pre id="logs-output" class="logs-output" tabindex="0">Loading…</pre>
+    </dialog>
+
+    <dialog id="delete-dialog" class="dialog dialog-small">
+        <form id="delete-form" method="dialog">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow eyebrow-danger">Destructive action</p>
+                    <h2>Delete server?</h2>
+                </div>
+                <button class="icon-button" type="button" data-close-dialog title="Close" aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="dialog-body">
+                <p id="delete-copy" class="delete-copy"></p>
+                <label class="check-row">
+                    <input name="delete_data" type="checkbox">
+                    <span><strong>Delete world and configuration data</strong><small>Backups inside this instance are removed too.</small></span>
+                </label>
+            </div>
+            <div class="dialog-footer dialog-footer-end">
+                <button class="button button-secondary" type="button" data-close-dialog>Cancel</button>
+                <button class="button button-danger" type="submit"><i data-lucide="trash-2"></i><span>Delete server</span></button>
+            </div>
+        </form>
+    </dialog>
+</body>
+</html>

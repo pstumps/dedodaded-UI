@@ -1,0 +1,13 @@
+.browser-data
+.git
+.github
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.venv
+**/__pycache__
+*.db
+*.pyc
+data
+dist
+tests
