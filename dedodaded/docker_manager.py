@@ -8,7 +8,7 @@ from typing import Any
 import docker
 from docker.errors import DockerException, NotFound
 
-from deddodaded.game_specs import Game, ServerConfig, build_container_spec
+from dedodaded.game_specs import Game, ServerConfig, build_container_spec
 
 
 class DockerUnavailableError(RuntimeError):
@@ -71,9 +71,8 @@ class DockerManager:
             "volumes": spec.volumes,
             "detach": True,
             "labels": {
-                "com.deddodaded.managed": "true",
-                "com.deddodaded.instance-id": config.instance_id,
-                "com.deddodaded.game": config.game.value,
+                "com.dedodaded.managed": "true",
+                "com.dedodaded.instance-id": config.instance_id,
             },
             "restart_policy": {"Name": "unless-stopped"},
             "stop_timeout": spec.stop_timeout,
@@ -166,4 +165,4 @@ class DockerManager:
 
     @staticmethod
     def _container_name(instance_id: str) -> str:
-        return f"deddodaded-{instance_id}"
+        return f"dedodaded-{instance_id}"

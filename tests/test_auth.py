@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from deddodaded.auth import AuthService
+from dedodaded.auth import AuthService
 
 
 class AuthServiceTests(TestCase):

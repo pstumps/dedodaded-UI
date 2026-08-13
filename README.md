@@ -1,6 +1,6 @@
-# Deddodaded
+# Dedodaded
 
-Deddodaded is a self-hosted web control panel for creating and operating dedicated
+Dedodaded is a self-hosted web control panel for creating and operating dedicated
 Project Zomboid and Valheim servers on one Linux Docker host. It manages server
 containers, persistent game data, logs, lifecycle actions, and game-specific mods.
 
@@ -20,8 +20,8 @@ games, and an account with `sudo` access. The installer supports APT, DNF, Pacma
 and APK based distributions.
 
 ```sh
-git clone https://github.com/YOUR_ACCOUNT/Deddodaded-UI.git
-cd Deddodaded-UI
+git clone https://github.com/YOUR_ACCOUNT/Dedodaded-UI.git
+cd Dedodaded-UI
 sh install.sh
 ```
 
@@ -81,11 +81,11 @@ All Valheim players normally need matching client-side mod versions.
 
 ## Operations
 
-The production files are installed at `/opt/deddodaded/app`. Persistent state is
-stored at `/var/lib/deddodaded`.
+The production files are installed at `/opt/dedodaded/app`. Persistent state is
+stored at `/var/lib/dedodaded`.
 
 ```sh
-cd /opt/deddodaded/app
+cd /opt/dedodaded/app
 sudo docker compose ps
 sudo docker compose logs --tail=200 panel
 sudo docker compose restart panel
@@ -102,8 +102,8 @@ not delete managed game containers or data.
 Back up both of these locations together while the panel is stopped:
 
 ```text
-/var/lib/deddodaded
-/opt/deddodaded/app/.env
+/var/lib/dedodaded
+/opt/dedodaded/app/.env
 ```
 
 The `.env` file contains the Fernet key used to encrypt game credentials in the
@@ -113,10 +113,10 @@ the backup as sensitive because it also contains the key and game credentials.
 For a consistent manual backup:
 
 ```sh
-cd /opt/deddodaded/app
+cd /opt/dedodaded/app
 sudo docker compose stop panel
-sudo tar -C / -czf deddodaded-backup.tgz \
-  var/lib/deddodaded opt/deddodaded/app/.env
+sudo tar -C / -czf dedodaded-backup.tgz \
+  var/lib/dedodaded opt/dedodaded/app/.env
 sudo docker compose start panel
 ```
 
@@ -151,7 +151,7 @@ python -m pip install -e '.[dev]'
 export PANEL_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
 mkdir -p data/secrets
 printf '%s\n' 'replace-with-a-long-password' > data/secrets/bootstrap_admin_password
-python -m deddodaded.main
+python -m dedodaded.main
 ```
 
 Run the checks with:
@@ -159,7 +159,7 @@ Run the checks with:
 ```sh
 python -m unittest discover -s tests -v
 ruff check .
-mypy deddodaded
+mypy dedodaded
 ```
 
 ## Current limitations

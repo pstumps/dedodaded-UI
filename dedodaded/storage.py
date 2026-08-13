@@ -8,7 +8,7 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet
 
-from deddodaded.game_specs import Game, ModReference, ServerConfig
+from dedodaded.game_specs import Game, ModReference, ServerConfig
 
 
 class ServerRepository:

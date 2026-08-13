@@ -4,8 +4,8 @@ import os
 
 import uvicorn
 
-from deddodaded.api import create_panel_app
-from deddodaded.settings import Settings
+from dedodaded.api import create_panel_app
+from dedodaded.settings import Settings
 
 
 def create_application():  # type: ignore[no-untyped-def]
@@ -14,7 +14,7 @@ def create_application():  # type: ignore[no-untyped-def]
 
 def run() -> None:
     uvicorn.run(
-        "deddodaded.main:create_application",
+        "dedodaded.main:create_application",
         factory=True,
         host=os.getenv("PANEL_BIND_HOST", "0.0.0.0"),
         port=int(os.getenv("PANEL_PORT", "8080")),

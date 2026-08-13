@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from deddodaded.game_specs import Game, ModReference, ServerConfig, build_container_spec
+from dedodaded.game_specs import Game, ModReference, ServerConfig, build_container_spec
 
 
 class GameSpecTests(TestCase):
@@ -17,11 +17,11 @@ class GameSpecTests(TestCase):
             mods=(ModReference("Azumatt-AzuClock", "AzuClock"),),
         )
 
-        spec = build_container_spec(config, "/srv/deddodaded")
+        spec = build_container_spec(config, "/srv/dedodaded")
 
         self.assertEqual(spec.environment["BEPINEX"], "true")
         self.assertEqual(spec.ports["2458/udp"], 2458)
-        self.assertIn("/srv/deddodaded/instances/mistlands/config", spec.volumes)
+        self.assertIn("/srv/dedodaded/instances/mistlands/config", spec.volumes)
 
     def test_valheim_rejects_short_passwords(self) -> None:
         config = ServerConfig(
@@ -36,7 +36,7 @@ class GameSpecTests(TestCase):
         )
 
         with self.assertRaisesRegex(ValueError, "at least 5"):
-            build_container_spec(config, "/srv/deddodaded")
+            build_container_spec(config, "/srv/dedodaded")
 
     def test_valheim_maps_non_default_ports_inside_and_outside_container(self) -> None:
         config = ServerConfig(
@@ -50,7 +50,7 @@ class GameSpecTests(TestCase):
             max_players=10,
         )
 
-        spec = build_container_spec(config, "/srv/deddodaded")
+        spec = build_container_spec(config, "/srv/dedodaded")
 
         self.assertEqual(spec.environment["SERVER_PORT"], "2500")
         self.assertEqual(
@@ -74,7 +74,7 @@ class GameSpecTests(TestCase):
             ),
         )
 
-        spec = build_container_spec(config, "/srv/deddodaded")
+        spec = build_container_spec(config, "/srv/dedodaded")
 
         self.assertEqual(spec.environment["MOD_WORKSHOP_IDS"], "2169435993;2286124931")
         self.assertEqual(spec.environment["MOD_NAMES"], "modoptions;BetterSortCC")
@@ -94,7 +94,7 @@ class GameSpecTests(TestCase):
         )
 
         with self.assertRaisesRegex(ValueError, "Workshop ID and mod ID"):
-            build_container_spec(config, "/srv/deddodaded")
+            build_container_spec(config, "/srv/dedodaded")
 
     def test_zomboid_maps_non_default_ports_inside_and_outside_container(self) -> None:
         config = ServerConfig(
@@ -108,7 +108,7 @@ class GameSpecTests(TestCase):
             max_players=16,
         )
 
-        spec = build_container_spec(config, "/srv/deddodaded")
+        spec = build_container_spec(config, "/srv/dedodaded")
 
         self.assertEqual(spec.environment["DEFAULT_PORT"], "17000")
         self.assertEqual(spec.environment["UDP_PORT"], "17001")

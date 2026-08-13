@@ -3,8 +3,8 @@
 set -eu
 umask 077
 
-APP_DIR=/opt/deddodaded/app
-DATA_DIR=/var/lib/deddodaded
+APP_DIR=/opt/dedodaded/app
+DATA_DIR=/var/lib/dedodaded
 SECRETS_DIR=$DATA_DIR/secrets
 ENV_FILE=$APP_DIR/.env
 SOURCE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
@@ -70,7 +70,7 @@ abort_install() {
 }
 
 require_source_file() {
-    [ -e "$SOURCE_DIR/$1" ] || fail "Run this installer from the Deddodaded repository (missing $1)"
+    [ -e "$SOURCE_DIR/$1" ] || fail "Run this installer from the Dedodaded repository (missing $1)"
 }
 
 install_docker() {
@@ -132,8 +132,8 @@ copy_application() {
         return
     fi
 
-    as_root rm -rf "$APP_DIR/deddodaded"
-    as_root cp -R "$SOURCE_DIR/deddodaded" "$APP_DIR/deddodaded"
+    as_root rm -rf "$APP_DIR/dedodaded"
+    as_root cp -R "$SOURCE_DIR/dedodaded" "$APP_DIR/dedodaded"
     for file in Dockerfile compose.yaml pyproject.toml README.md .dockerignore .gitattributes install.sh; do
         as_root cp "$SOURCE_DIR/$file" "$APP_DIR/$file"
     done
@@ -170,7 +170,7 @@ write_bootstrap_password() {
 
 configure_firewall() {
     if command -v ufw >/dev/null 2>&1; then
-        as_root ufw allow "$panel_port/tcp" comment 'Deddodaded panel'
+        as_root ufw allow "$panel_port/tcp" comment 'Dedodaded panel'
         if ! as_root ufw status | grep -q '^Status: active'; then
             info "UFW is inactive. The rule was saved, but the installer did not enable UFW."
         fi
@@ -190,17 +190,17 @@ exec 3<>/dev/tty || fail "This installer must run from an interactive terminal"
 trap restore_terminal EXIT
 trap abort_install HUP INT TERM
 
-for required_file in Dockerfile compose.yaml pyproject.toml README.md deddodaded; do
+for required_file in Dockerfile compose.yaml pyproject.toml README.md dedodaded; do
     require_source_file "$required_file"
 done
 
 cat <<'EOF'
-Deddodaded VPS installer
+Dedodaded VPS installer
 
 This installer needs administrator access to:
   - install and start Docker when necessary;
-  - place the application under /opt/deddodaded;
-  - store persistent state under /var/lib/deddodaded;
+  - place the application under /opt/dedodaded;
+  - store persistent state under /var/lib/dedodaded;
   - access the Docker socket to manage game-server containers;
   - optionally add a panel port to the host firewall.
 

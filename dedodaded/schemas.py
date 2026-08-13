@@ -4,7 +4,7 @@ import re
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from deddodaded.game_specs import Game
+from dedodaded.game_specs import Game
 
 
 class RequestModel(BaseModel):

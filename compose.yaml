@@ -2,8 +2,8 @@ services:
   panel:
     build:
       context: .
-    image: deddodaded-panel:local
-    container_name: deddodaded-panel
+    image: dedodaded-panel:local
+    container_name: dedodaded-panel
     restart: unless-stopped
     user: "1000:1000"
     group_add:
@@ -19,7 +19,7 @@ services:
       PANEL_BIND_HOST: 0.0.0.0
       PANEL_PORT: 8080
       PANEL_DATA_ROOT: /data
-      PANEL_HOST_DATA_ROOT: "${PANEL_DATA_DIR:-/var/lib/deddodaded}"
+      PANEL_HOST_DATA_ROOT: "${PANEL_DATA_DIR:-/var/lib/dedodaded}"
       PANEL_ENCRYPTION_KEY: "${PANEL_ENCRYPTION_KEY:?Panel encryption key is required}"
       PANEL_BOOTSTRAP_USERNAME: "${PANEL_BOOTSTRAP_USERNAME:-admin}"
       PANEL_BOOTSTRAP_PASSWORD_FILE: /run/panel-secrets/bootstrap_admin_password
@@ -27,6 +27,6 @@ services:
       PANEL_ALLOWED_ORIGIN: "${PANEL_ALLOWED_ORIGIN:-}"
       PANEL_FORWARDED_ALLOW_IPS: "${PANEL_FORWARDED_ALLOW_IPS:-127.0.0.1}"
     volumes:
-      - "${PANEL_DATA_DIR:-/var/lib/deddodaded}:/data:rw"
-      - "${PANEL_SECRETS_DIR:-/var/lib/deddodaded/secrets}:/run/panel-secrets:rw"
+      - "${PANEL_DATA_DIR:-/var/lib/dedodaded}:/data:rw"
+      - "${PANEL_SECRETS_DIR:-/var/lib/dedodaded/secrets}:/run/panel-secrets:rw"
       - /var/run/docker.sock:/var/run/docker.sock:rw

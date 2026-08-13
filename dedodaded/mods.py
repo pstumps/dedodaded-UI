@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 
 import httpx
 
-from deddodaded.game_specs import ModReference
+from dedodaded.game_specs import ModReference
 
 THUNDERSTORE_API = "https://thunderstore.io/c/valheim/api/v1/package/"
 STEAM_WORKSHOP_API = (
@@ -62,7 +62,7 @@ class SteamWorkshopClient:
         self.client = client or httpx.Client(
             timeout=15,
             follow_redirects=True,
-            headers={"User-Agent": "Deddodaded/0.1 (+self-hosted-server-panel)"},
+            headers={"User-Agent": "Dedodaded/0.1 (+self-hosted-server-panel)"},
         )
 
     def lookup(self, workshop_id: str) -> WorkshopItem:
@@ -95,7 +95,7 @@ class ThunderstoreClient:
         self.client = client or httpx.Client(
             timeout=20,
             follow_redirects=True,
-            headers={"User-Agent": "Deddodaded/0.1 (+self-hosted-server-panel)"},
+            headers={"User-Agent": "Dedodaded/0.1 (+self-hosted-server-panel)"},
         )
         self.cache_seconds = cache_seconds
         self._cached_at = 0.0
@@ -208,7 +208,7 @@ class ValheimModInstaller:
         self.client = client or httpx.Client(
             timeout=60,
             follow_redirects=True,
-            headers={"User-Agent": "Deddodaded/0.1 (+self-hosted-server-panel)"},
+            headers={"User-Agent": "Dedodaded/0.1 (+self-hosted-server-panel)"},
         )
 
     def install(self, instance_id: str, package: ThunderstorePackage) -> Path:

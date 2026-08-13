@@ -6,7 +6,7 @@ from unittest import TestCase
 
 import httpx
 
-from deddodaded.mods import (
+from dedodaded.mods import (
     SteamWorkshopClient,
     ThunderstoreClient,
     ThunderstorePackage,

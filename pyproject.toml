@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "deddodaded"
+name = "dedodaded"
 version = "0.1.0"
 description = "A self-hosted control panel for dedicated game servers"
 readme = "README.md"
@@ -24,10 +24,10 @@ dev = [
 ]
 
 [project.scripts]
-deddodaded = "deddodaded.main:run"
+dedodaded = "dedodaded.main:run"
 
 [tool.hatch.build.targets.wheel]
-packages = ["deddodaded"]
+packages = ["dedodaded"]
 
 [tool.ruff]
 line-length = 100
@@ -37,9 +37,9 @@ target-version = "py312"
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
-"deddodaded/api.py" = ["B008"]
+"dedodaded/api.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
-packages = ["deddodaded"]
+packages = ["dedodaded"]

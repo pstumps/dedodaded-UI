@@ -16,34 +16,34 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response, s
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from deddodaded.auth import AuthService, Session
-from deddodaded.docker_manager import (
+from dedodaded.auth import AuthService, Session
+from dedodaded.docker_manager import (
     DockerManager,
     DockerUnavailableError,
     RuntimeStatus,
 )
-from deddodaded.game_specs import (
+from dedodaded.game_specs import (
     Game,
     ModReference,
     ServerConfig,
     build_container_spec,
 )
-from deddodaded.mods import (
+from dedodaded.mods import (
     SteamWorkshopClient,
     ThunderstoreClient,
     ValheimModInstaller,
 )
-from deddodaded.schemas import (
+from dedodaded.schemas import (
     CreateServerRequest,
     LoginRequest,
     ValheimModRequest,
     WorkshopLookupRequest,
     ZomboidModRequest,
 )
-from deddodaded.settings import Settings
-from deddodaded.storage import ServerRepository
+from dedodaded.settings import Settings
+from dedodaded.storage import ServerRepository
 
-SESSION_COOKIE = "deddodaded_session"
+SESSION_COOKIE = "dedodaded_session"
 UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 
@@ -112,7 +112,7 @@ def create_panel_app(
     services = services or build_services(settings)
     limiter = LoginRateLimiter()
     app = FastAPI(
-        title="Deddodaded",
+        title="Dedodaded",
         version="0.1.0",
         docs_url=None,
         redoc_url=None,

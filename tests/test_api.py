@@ -5,13 +5,13 @@ from unittest import TestCase
 from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
 
-from deddodaded.api import AppServices, create_panel_app
-from deddodaded.auth import AuthService
-from deddodaded.docker_manager import RuntimeStatus
-from deddodaded.game_specs import ServerConfig
-from deddodaded.mods import WorkshopItem
-from deddodaded.settings import Settings
-from deddodaded.storage import ServerRepository
+from dedodaded.api import AppServices, create_panel_app
+from dedodaded.auth import AuthService
+from dedodaded.docker_manager import RuntimeStatus
+from dedodaded.game_specs import ServerConfig
+from dedodaded.mods import WorkshopItem
+from dedodaded.settings import Settings
+from dedodaded.storage import ServerRepository
 
 
 class StubDocker:
@@ -70,7 +70,7 @@ class ApiTests(TestCase):
         key = Fernet.generate_key().decode()
         settings = Settings(
             data_root=root,
-            host_data_root=PurePosixPath("/opt/deddodaded/data"),
+            host_data_root=PurePosixPath("/opt/dedodaded/data"),
             encryption_key=key,
             bootstrap_username="admin",
             bootstrap_password_file=root / "unused",

@@ -4,8 +4,8 @@ from unittest import TestCase
 
 from docker.errors import NotFound
 
-from deddodaded.docker_manager import DockerManager, DockerUnavailableError
-from deddodaded.game_specs import Game, ServerConfig
+from dedodaded.docker_manager import DockerManager, DockerUnavailableError
+from dedodaded.game_specs import Game, ServerConfig
 
 
 class FakeContainer:
@@ -89,7 +89,7 @@ class DockerManagerTests(TestCase):
         self.manager = DockerManager(
             self.client,
             Path(self.temporary_directory.name),
-            PurePosixPath("/opt/deddodaded/data"),
+            PurePosixPath("/opt/dedodaded/data"),
         )
 
     def test_deploy_pulls_creates_and_starts_managed_container(self) -> None:
@@ -101,9 +101,9 @@ class DockerManagerTests(TestCase):
             ["ghcr.io/community-valheim-tools/valheim-server:latest"],
         )
         options = self.client.containers.last_create
-        self.assertEqual(options["name"], "deddodaded-mistlands")
+        self.assertEqual(options["name"], "dedodaded-mistlands")
         self.assertEqual(
-            options["labels"]["com.deddodaded.instance-id"],  # type: ignore[index]
+            options["labels"]["com.dedodaded.instance-id"],  # type: ignore[index]
             "mistlands",
         )
         self.assertTrue(
@@ -112,7 +112,7 @@ class DockerManagerTests(TestCase):
 
     def test_deploy_replaces_existing_container_but_keeps_data(self) -> None:
         self.manager.deploy(valheim_config())
-        existing = self.client.containers.get("deddodaded-mistlands")
+        existing = self.client.containers.get("dedodaded-mistlands")
 
         self.manager.deploy(valheim_config())
 
@@ -132,7 +132,7 @@ class DockerManagerTests(TestCase):
         manager = DockerManager(
             None,
             Path(self.temporary_directory.name),
-            PurePosixPath("/opt/deddodaded/data"),
+            PurePosixPath("/opt/dedodaded/data"),
             "socket missing",
         )
 

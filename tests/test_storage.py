@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from cryptography.fernet import Fernet
 
-from deddodaded.game_specs import Game, ModReference, ServerConfig
-from deddodaded.storage import ServerRepository
+from dedodaded.game_specs import Game, ModReference, ServerConfig
+from dedodaded.storage import ServerRepository
 
 
 class ServerRepositoryTests(TestCase):
