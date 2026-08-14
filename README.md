@@ -26,10 +26,16 @@ sh install.sh
 ```
 
 The script explains its privileged operations before requesting `sudo`. It can
-install and start Docker, prompts for panel access and the first administrator,
-then builds and starts the panel. Re-running it updates the application while
-preserving the encryption key, administrator account, panel database, and game
-data.
+install and start Docker, prompts for an access mode and the first administrator
+account, then builds and starts the panel. Re-running it updates the application
+while preserving the encryption key, administrator account, panel database, and
+game data.
+
+The installer offers two access modes. It does not offer direct public HTTP:
+
+- `private` binds the panel to VPS loopback for access through an SSH tunnel.
+- `https` publishes automatic, browser-trusted HTTPS on the VPS public IPv4
+  address at `https://VPS_IP/dedodaded`.
 
 The default `private` mode binds the panel to `127.0.0.1`. Connect from your own
 computer with the tunnel printed by the installer:
@@ -39,19 +45,26 @@ ssh -L 8080:127.0.0.1:8080 YOUR_USER@YOUR_VPS
 ```
 
 Then open `http://127.0.0.1:8080`. Keep the SSH session running while using the
-panel.
+panel. This loopback HTTP connection travels inside the encrypted SSH tunnel and
+is never published to the network.
 
-### Public access and HTTPS
+### Automatic public HTTPS
 
-Public mode binds the selected TCP port to every host interface. Do not submit
-credentials over public plain HTTP. Provide an `https://` origin during installation
-and route that origin through a TLS reverse proxy such as Caddy, Nginx, or your VPS
-provider's HTTPS proxy. The origin must be the exact browser origin, without a path
-or trailing slash, for example `https://games.example.com`.
+Choose `https` to have Dedodaded run Caddy and obtain a Let's Encrypt certificate
+for the VPS public IPv4 address. The installer normally detects the address and
+lets you confirm or replace it. It then waits until a trusted endpoint is available
+before reporting success.
 
-The installer can add the panel's TCP port to an active UFW or firewalld
-configuration. It never enables an inactive firewall. Provider firewalls and
-security groups must be configured separately.
+HTTPS mode publishes only TCP port `443`. Port `80` is not opened or used, and the
+panel's port `8080` remains private on the Compose network. Allow inbound TCP `443`
+in the VPS provider firewall or security group before installation. The installer
+can also add a TCP `443` rule to UFW or an active firewalld configuration, but it
+never enables an inactive firewall.
+
+Let's Encrypt IP certificates are short-lived, lasting about six days. Caddy renews
+them automatically over TLS-ALPN on TCP `443`; keep that port reachable and preserve
+`/var/lib/dedodaded/caddy`. If the VPS public address changes, rerun the installer
+and select the new address.
 
 ## Game networking
 
@@ -88,10 +101,14 @@ stored at `/var/lib/dedodaded`.
 cd /opt/dedodaded/app
 sudo docker compose ps
 sudo docker compose logs --tail=200 panel
+sudo docker compose logs --tail=200 caddy  # HTTPS mode only
 sudo docker compose restart panel
 sudo docker compose down
 sudo docker compose up -d
 ```
+
+The installed `.env` selects the private or HTTPS Compose override, so these
+commands retain the access mode chosen during installation.
 
 To update from a fresh repository checkout, pull the desired revision and run
 `sudo sh install.sh` again. The installer rebuilds only the panel image; it does
@@ -132,6 +149,8 @@ game servers before taking a full filesystem snapshot.
 - Passwords use PBKDF2-SHA256; session tokens are stored as hashes.
 - Authentication uses an `HttpOnly` cookie, a separate CSRF token, same-origin
   checks, and login throttling.
+- Public mode uses a `Secure`, path-scoped session cookie and an exact HTTPS
+  origin. Caddy terminates TLS and sends an HSTS header.
 - Saved game passwords and administrator passwords are encrypted at rest.
 - The bootstrap password file is removed after the first account is created.
 
@@ -167,7 +186,8 @@ mypy dedodaded
 - One local administrator account is bootstrapped; there is no user-management or
   password-reset screen yet.
 - The panel controls one local Docker daemon and does not orchestrate multiple VPSs.
-- TLS, DNS, cloud firewall rules, and off-host backups remain operator-managed.
+- Automatic public HTTPS currently supports one public IPv4 address. DNS, provider
+  firewall rules, and off-host backups remain operator-managed.
 - Game server images and public mod catalogs are third-party dependencies.
 - Removing a mod updates desired configuration, but compatibility and world-save
   migrations remain the game administrator's responsibility.

@@ -1,12 +1,18 @@
+const APP_BASE_URL = new URL("./", document.baseURI);
+
+function appUrl(path) {
+    return new URL(path.replace(/^\/+/, ""), APP_BASE_URL).toString();
+}
+
 const GAME_META = {
     "project-zomboid": {
         label: "Project Zomboid",
-        image: "/assets/project-zomboid.png",
+        image: appUrl("assets/project-zomboid.png"),
         source: "Steam Workshop",
     },
     valheim: {
         label: "Valheim",
-        image: "/assets/valheim.png",
+        image: appUrl("assets/valheim.png"),
         source: "Thunderstore",
     },
 };
@@ -626,7 +632,7 @@ async function api(path, options = {}, includeSession = true) {
     if (["POST", "PUT", "PATCH", "DELETE"].includes(fetchOptions.method) && includeSession && state.csrfToken) {
         fetchOptions.headers["X-CSRF-Token"] = state.csrfToken;
     }
-    const response = await fetch(path, fetchOptions);
+    const response = await fetch(appUrl(path), fetchOptions);
     if (response.status === 204) return null;
     const contentType = response.headers.get("content-type") || "";
     const payload = contentType.includes("application/json") ? await response.json() : { detail: await response.text() };

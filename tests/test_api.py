@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -77,6 +78,7 @@ class ApiTests(TestCase):
             cookie_secure=False,
             allowed_origin=None,
         )
+        self.settings = settings
         repository = ServerRepository(root / "panel.db", key)
         auth = AuthService(root / "panel.db", iterations=1_000)
         auth.create_user("admin", "a-long-test-password")
@@ -89,6 +91,7 @@ class ApiTests(TestCase):
             workshop=StubWorkshop(),  # type: ignore[arg-type]
             valheim_installer=StubInstaller(),  # type: ignore[arg-type]
         )
+        self.services = services
         self.client = TestClient(create_panel_app(settings, services))
         self.addCleanup(self.client.close)
 
@@ -173,3 +176,43 @@ class ApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
+
+    def test_https_prefix_scopes_routes_origin_and_cookie(self) -> None:
+        settings = replace(
+            self.settings,
+            allowed_origin="https://192.0.2.10",
+            base_path="/dedodaded",
+            cookie_secure=True,
+        )
+        with TestClient(
+            create_panel_app(settings, self.services),
+            base_url="https://192.0.2.10",
+        ) as client:
+            index = client.get("/dedodaded/")
+            self.assertEqual(index.status_code, 200)
+            self.assertIn('href="styles.css"', index.text)
+            self.assertIn('src="app.js"', index.text)
+            self.assertEqual(client.get("/dedodaded/app.js").status_code, 200)
+            health = client.get("/dedodaded/api/health")
+            self.assertEqual(health.status_code, 200)
+            self.assertEqual(health.headers["cache-control"], "no-store")
+            self.assertEqual(client.get("/api/health").status_code, 404)
+            rejected = client.post(
+                "/dedodaded/api/auth/login",
+                headers={"Origin": "https://attacker.test"},
+                json={"username": "admin", "password": "a-long-test-password"},
+            )
+            self.assertEqual(rejected.status_code, 403)
+
+            response = client.post(
+                "/dedodaded/api/auth/login",
+                headers={"Origin": "https://192.0.2.10"},
+                json={"username": "admin", "password": "a-long-test-password"},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        cookie = response.headers["set-cookie"].casefold()
+        self.assertIn("path=/dedodaded", cookie)
+        self.assertIn("secure", cookie)
+        self.assertIn("httponly", cookie)
+        self.assertIn("samesite=strict", cookie)

@@ -1,0 +1,20 @@
+services:
+  caddy:
+    image: caddy:2.11.4-alpine
+    container_name: dedodaded-caddy
+    restart: unless-stopped
+    depends_on:
+      - panel
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    ports:
+      - "443:443/tcp"
+    environment:
+      PANEL_PUBLIC_IP: "${PANEL_PUBLIC_IP:?Public IP address is required}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - "${PANEL_CADDY_DATA_DIR:-/var/lib/dedodaded/caddy/data}:/data:rw"
+      - "${PANEL_CADDY_CONFIG_DIR:-/var/lib/dedodaded/caddy/config}:/config:rw"

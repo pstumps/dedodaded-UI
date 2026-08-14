@@ -111,6 +111,8 @@ def create_panel_app(
 ) -> FastAPI:
     services = services or build_services(settings)
     limiter = LoginRateLimiter()
+    cookie_path = settings.base_path or "/"
+    api_path = f"{settings.base_path}/api/"
     app = FastAPI(
         title="Dedodaded",
         version="0.1.0",
@@ -143,7 +145,7 @@ def create_panel_app(
             "https://cdn.cloudflare.steamstatic.com https://gcdn.thunderstore.io "
             "https://steamuserimages-a.akamaihd.net; connect-src 'self'"
         )
-        if request.url.path.startswith("/api/"):
+        if request.url.path.startswith(api_path):
             response.headers["Cache-Control"] = "no-store"
         return response
 
@@ -197,7 +199,7 @@ def create_panel_app(
             httponly=True,
             secure=settings.cookie_secure,
             samesite="strict",
-            path="/",
+            path=cookie_path,
         )
         return response
 
@@ -217,7 +219,7 @@ def create_panel_app(
         if token:
             services.auth.revoke_session(token)
         response = Response(status_code=status.HTTP_204_NO_CONTENT)
-        response.delete_cookie(SESSION_COOKIE, path="/")
+        response.delete_cookie(SESSION_COOKIE, path=cookie_path)
         return response
 
     @app.get("/api/servers")
@@ -412,6 +414,17 @@ def create_panel_app(
     frontend = static_directory or Path(__file__).with_name("static")
     if frontend.is_dir():
         app.mount("/", StaticFiles(directory=frontend, html=True), name="frontend")
+    if settings.base_path:
+        root_app = FastAPI(
+            title="Dedodaded",
+            version="0.1.0",
+            docs_url=None,
+            redoc_url=None,
+            openapi_url=None,
+        )
+        root_app.state.services = services
+        root_app.mount(settings.base_path, app)
+        return root_app
     return app
 
 
