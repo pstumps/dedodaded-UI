@@ -75,7 +75,7 @@ class DockerManager:
                 "com.dedodaded.instance-id": config.instance_id,
             },
             "restart_policy": {"Name": "unless-stopped"},
-            "stop_timeout": spec.stop_timeout,
+            #"stop_timeout": spec.stop_timeout,
         }
         if spec.cap_add:
             create_options["cap_add"] = list(spec.cap_add)

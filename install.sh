@@ -329,7 +329,7 @@ while :; do
 done
 
 existing_username=$(read_env_value PANEL_BOOTSTRAP_USERNAME)
-admin_username=${existing_username:-admin}
+admin_username=dedodaded-admin
 admin_password=
 if as_root test -f "$DATA_DIR/panel.db"; then
     info "An existing panel database was found. Its administrator account will be preserved."
