@@ -161,7 +161,9 @@ or appropriately isolated VPS.
 
 ## Local development
 
-Python 3.12 or newer and a running Docker daemon are required.
+Python 3.12 or newer, Node.js 22.12 or newer, and a running Docker daemon are required.
+
+Start the FastAPI backend first:
 
 ```sh
 python -m venv .venv
@@ -173,9 +175,22 @@ printf '%s\n' 'replace-with-a-long-password' > data/secrets/bootstrap_admin_pass
 python -m dedodaded.main
 ```
 
+In another terminal, start the Svelte development server. Vite proxies `/api`
+requests to FastAPI at `http://127.0.0.1:8080`:
+
+```sh
+cd dedodaded-UI
+npm ci
+npm run dev
+```
+
+Open the URL printed by Vite. To create the production assets served by FastAPI,
+run `npm run build`; the bundle is written to `dedodaded/static`.
+
 Run the checks with:
 
 ```sh
+cd dedodaded-UI && npm run check && npm run build && cd ..
 python -m unittest discover -s tests -v
 ruff check .
 mypy dedodaded

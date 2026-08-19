@@ -1,4 +1,5 @@
 from dataclasses import replace
+from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -13,6 +14,19 @@ from dedodaded.game_specs import ServerConfig
 from dedodaded.mods import WorkshopItem
 from dedodaded.settings import Settings
 from dedodaded.storage import ServerRepository
+
+
+class FrontendAssetParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.paths: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        if tag == "script" and attributes.get("src"):
+            self.paths.append(str(attributes["src"]))
+        if tag == "link" and attributes.get("rel") == "stylesheet" and attributes.get("href"):
+            self.paths.append(str(attributes["href"]))
 
 
 class StubDocker:
@@ -190,9 +204,13 @@ class ApiTests(TestCase):
         ) as client:
             index = client.get("/dedodaded/")
             self.assertEqual(index.status_code, 200)
-            self.assertIn('href="styles.css"', index.text)
-            self.assertIn('src="app.js"', index.text)
-            self.assertEqual(client.get("/dedodaded/app.js").status_code, 200)
+            assets = FrontendAssetParser()
+            assets.feed(index.text)
+            self.assertEqual(len(assets.paths), 2)
+            self.assertTrue(all(path.startswith("./assets/") for path in assets.paths))
+            for asset_path in assets.paths:
+                response = client.get(f"/dedodaded/{asset_path.removeprefix('./')}")
+                self.assertEqual(response.status_code, 200)
             health = client.get("/dedodaded/api/health")
             self.assertEqual(health.status_code, 200)
             self.assertEqual(health.headers["cache-control"], "no-store")
